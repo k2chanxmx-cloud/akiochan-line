@@ -139,22 +139,34 @@ body {
     min-height: 62px;
     background: #f4f4f4;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     padding: 9px 10px;
     gap: 8px;
     flex-shrink: 0;
     border-top: 1px solid rgba(0,0,0,0.08);
 }
 
-.input-area input {
+.input-area textarea {
     flex: 1;
-    height: 42px;
+
+    min-height: 42px;
+    max-height: 120px;
+
     border: none;
-    border-radius: 21px;
+    border-radius: 22px;
+
     background: white;
-    padding: 0 15px;
+
+    padding: 11px 15px;
+
     font-size: 16px;
+
     outline: none;
+    resize: none;
+
+    overflow-y: auto;
+
+    font-family: inherit;
 }
 
 .input-area button {
@@ -166,6 +178,7 @@ body {
     font-weight: 700;
     padding: 0 16px;
     font-size: 14px;
+    flex-shrink: 0;
 }
 
 .input-area button:disabled {
@@ -173,6 +186,7 @@ body {
 }
 
 @media (min-width: 431px) {
+
     body {
         background: #111827;
     }
@@ -180,4 +194,5 @@ body {
     .app {
         box-shadow: 0 0 40px rgba(0,0,0,0.35);
     }
+
 }
