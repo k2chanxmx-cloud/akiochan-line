@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>彼氏チャット</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="app">
+
+    <header class="chat-header">
+        <div class="back-icon">‹</div>
+
+        <div class="profile">
+            <div class="avatar">♡</div>
+            <div>
+                <div class="name">りょうた</div>
+                <div class="status">オンライン</div>
+            </div>
+        </div>
+
+        <button class="clear-btn" onclick="clearChat()">削除</button>
+    </header>
+
+    <main id="chatArea" class="chat-area">
+        <div class="date-label">今日</div>
+    </main>
+
+    <form id="chatForm" class="input-area">
+        <input
+            id="messageInput"
+            type="text"
+            autocomplete="off"
+            placeholder="メッセージを入力"
+        >
+        <button type="submit">送信</button>
+    </form>
+
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
