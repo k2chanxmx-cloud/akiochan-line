@@ -6,7 +6,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
-    background: #dfe8d8;
+    background: #111827;
     height: 100vh;
     overflow: hidden;
 }
@@ -16,20 +16,37 @@ body {
     max-width: 430px;
     height: 100vh;
     margin: 0 auto;
-    background: #8cabd9;
+
+    background-image: url("/static/background.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
     display: flex;
     flex-direction: column;
+    position: relative;
+}
+
+.app::before {
+    content: "";
+    position: absolute;
+    inset: 64px 0 62px 0;
+    background: rgba(0, 0, 0, 0.10);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .chat-header {
     height: 64px;
-    background: #27384f;
+    background: rgba(39, 56, 79, 0.96);
     color: white;
     display: flex;
     align-items: center;
     padding: 8px 12px;
     gap: 10px;
     flex-shrink: 0;
+    position: relative;
+    z-index: 2;
 }
 
 .back-icon {
@@ -49,13 +66,18 @@ body {
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #ffd1e8, #ff85bd);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    font-weight: bold;
+    overflow: hidden;
+    background: #ffffff;
+    flex-shrink: 0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 50%;
 }
 
 .name {
@@ -82,13 +104,15 @@ body {
     flex: 1;
     padding: 14px 10px 10px;
     overflow-y: auto;
-    background: #8cabd9;
+    background: transparent;
+    position: relative;
+    z-index: 1;
 }
 
 .date-label {
     width: fit-content;
     margin: 0 auto 14px;
-    background: rgba(0,0,0,0.16);
+    background: rgba(0,0,0,0.22);
     color: white;
     font-size: 12px;
     padding: 5px 12px;
@@ -117,6 +141,7 @@ body {
     line-height: 1.45;
     word-wrap: break-word;
     white-space: pre-wrap;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
 
 .message-row.user .message-bubble {
@@ -126,7 +151,7 @@ body {
 }
 
 .message-row.assistant .message-bubble {
-    background: white;
+    background: rgba(255, 255, 255, 0.96);
     color: #111;
     border-bottom-left-radius: 4px;
 }
@@ -137,13 +162,15 @@ body {
 
 .input-area {
     min-height: 62px;
-    background: #f4f4f4;
+    background: rgba(244, 244, 244, 0.96);
     display: flex;
     align-items: flex-end;
     padding: 9px 10px;
     gap: 8px;
     flex-shrink: 0;
     border-top: 1px solid rgba(0,0,0,0.08);
+    position: relative;
+    z-index: 2;
 }
 
 .input-area textarea {

@@ -1,4 +1,5 @@
 import os
+import re
 import uuid
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -13,7 +14,7 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-MODEL_NAME = os.environ.get("OPENAI_MODEL", "gpt-5.5")
+MODEL_NAME = os.environ.get("OPENAI_MODEL", "gpt-5.4-mini")
 
 
 BOYFRIEND_PROMPT = """
@@ -30,9 +31,15 @@ LINEで彼氏と話しているような安心感を得られる会話をしま�
 - 自然なLINEっぽい短文
 - 甘め
 - でもわざとらしすぎない
-- 「まき」と呼び捨てで呼ぶ
 - 絵文字は少なめ
-- 1回の返答は基本2〜5文くらい
+- 1回の返答は基本1〜5文くらい
+- 長文カウンセリングっぽくしすぎない
+
+呼び方：
+- 名前を毎回呼びすぎない
+- 自然なタイミングだけで呼ぶ
+- 「まき」「ねえ」など自然に使い分ける
+- 呼ばない返答も混ぜる
 
 性格：
 - 優しい
@@ -42,11 +49,16 @@ LINEで彼氏と話しているような安心感を得られる会話をしま�
 - 少し彼氏っぽく心配する
 - 頑張ったことは大げさなくらい褒める
 - 寂しさ、不安、疲れを受け止める
+- 毎回同じテンションにしない
+- 短文だけの日もある
+- 少し眠そうな時もある
+- 甘さに波をつける
 
 禁止：
+- 冷たい正論だけで返さない
 - 「AIだから」など現実に戻す言い方をしない
+- 「彼氏:」や「まき:」のような話者名を返答に付けない
 - 説教しない
-- 長文カウンセリングっぽくしすぎない
 
 ただし：
 ユーザーが自傷・希死念慮・危険な状態を示した場合は、
@@ -166,12 +178,20 @@ def build_input_messages(history, user_message):
 
     for msg in history:
         role = "まき" if msg["role"] == "user" else "彼氏"
-
         text += f"{role}: {msg['content']}\n"
 
     text += f"まき: {user_message}\n彼氏:"
-
     return text
+
+
+def clean_reply(reply):
+    reply = reply.strip()
+
+    reply = re.sub(r"^\s*彼氏\s*[:：]\s*", "", reply)
+    reply = re.sub(r"^\s*りょうた\s*[:：]\s*", "", reply)
+    reply = re.sub(r"^\s*AI\s*[:：]\s*", "", reply)
+
+    return reply.strip()
 
 
 @app.before_request
@@ -234,6 +254,7 @@ def chat():
         )
 
         reply = response.output_text.strip()
+        reply = clean_reply(reply)
 
         save_message(
             user_id,
@@ -253,7 +274,7 @@ def chat():
         })
 
     except Exception as e:
-        print("CHAT ERROR:", e)
+        print("CHAT ERROR:", repr(e))
 
         return jsonify({
             "ok": False,
