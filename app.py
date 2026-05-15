@@ -3,7 +3,7 @@ import re
 import uuid
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from openai import OpenAI
 
 
@@ -13,6 +13,7 @@ app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
+APP_PASSWORD = os.environ.get("APP_PASSWORD", "")
 
 MODEL_NAME = os.environ.get("OPENAI_MODEL", "gpt-5.4-mini")
 
@@ -200,6 +201,51 @@ def before_request():
 
     if "user_id" not in session:
         session["user_id"] = str(uuid.uuid4())
+
+    public_paths = [
+        "/login",
+        "/health",
+        "/static/",
+        "/manifest.json",
+        "/service-worker.js"
+    ]
+
+    if request.path == "/login":
+        return
+
+    if request.path.startswith("/static/"):
+        return
+
+    if not APP_PASSWORD:
+        return
+
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if not APP_PASSWORD:
+        return redirect(url_for("index"))
+
+    error = ""
+
+    if request.method == "POST":
+        password = request.form.get("password", "")
+
+        if password == APP_PASSWORD:
+            session["logged_in"] = True
+            return redirect(url_for("index"))
+
+        error = "合言葉が違うよ"
+
+    return render_template("login.html", error=error)
+
+
+@app.route("/logout")
+def logout():
+    session.pop("logged_in", None)
+    return redirect(url_for("login"))
 
 
 @app.route("/")
